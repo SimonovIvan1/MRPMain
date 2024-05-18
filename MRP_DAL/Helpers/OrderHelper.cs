@@ -90,42 +90,70 @@ namespace MRP_DAL.Helpers
                     var needItem = await GetParentItems(parentItem.Id);
                     if(needItem.Count == 0)
                     {
-                        var quantityMain = result.FirstOrDefault(x => x.GoodId == parentItem.Id);
+                        var quantityMain = result.FirstOrDefault(x => x.GoodId == parentItem.ParentItemId);
                         int quantity = 0;
+                        var newNeededItem = new NeededItems();
                         if (parentItem.ParentItemId == order.GoodsId)
+                        {
                             quantity = quantityMain == null ? parentItem.Balance * order.Quantity
                                                             : quantityMain.Quantity * parentItem.Balance;
+                            newNeededItem = new NeededItems
+                            {
+                                IsMain = true,
+                                GoodId = parentItem.Id,
+                                ParentItemId = order.GoodsId,
+                                Quantity = quantity
+                            };
+                        }
+                            
                         else
+                        {
                             quantity = quantityMain == null ? -2
                                                             : quantityMain.Quantity * parentItem.Balance;
-                        var newNeededItem = new NeededItems
-                        {
-                            IsMain = true,
-                            GoodId = parentItem.Id,
-                            ParentItemId = quantityMain?.GoodId,
-                            Quantity = quantity
-                        };
+                            newNeededItem = new NeededItems
+                            {
+                                IsMain = true,
+                                GoodId = parentItem.Id,
+                                ParentItemId = quantityMain?.GoodId,
+                                Quantity = quantity
+                            };
+                        }
+                            
                         result.Add(newNeededItem);
                         continue;
                     }
 
                     else
                     {
-                        var quantityMain = result.FirstOrDefault(x => x.GoodId == parentItem.Id);
+                        var quantityMain = result.FirstOrDefault(x => x.GoodId == parentItem.ParentItemId);
                         int? quantity = 0;
+                        var newNeededItem = new NeededItems();
                         if (parentItem.ParentItemId == order.GoodsId)
+                        {
                             quantity = quantityMain == null ? parentItem.Balance * order.Quantity
                                                             : quantityMain?.Quantity * parentItem.Balance;
+                            newNeededItem = new NeededItems
+                            {
+                                IsMain = false,
+                                GoodId = parentItem.Id,
+                                ParentItemId = order.GoodsId,
+                                Quantity = quantity.Value
+                            };
+                        }
+                            
                         else
+                        {
                             quantity = quantityMain == null ? -1
                                                             : quantityMain.Quantity * parentItem.Balance;
-                        var newNeededItem = new NeededItems
-                        {
-                            IsMain = false,
-                            GoodId = parentItem.Id,
-                            ParentItemId = quantityMain?.GoodId,
-                            Quantity = quantity.Value
-                        };
+                            newNeededItem = new NeededItems
+                            {
+                                IsMain = false,
+                                GoodId = parentItem.Id,
+                                ParentItemId = quantityMain?.GoodId,
+                                Quantity = quantity.Value
+                            };
+                        }
+                            
                         result.Add(newNeededItem);
                     }
                     
