@@ -111,25 +111,22 @@ namespace MRP_DAL.Helpers
 
                     else
                     {
-                        foreach (var itemNeeded in needItem)
+                        var quantityMain = result.FirstOrDefault(x => x.GoodId == parentItem.Id);
+                        int? quantity = 0;
+                        if (parentItem.ParentItemId == order.GoodsId)
+                            quantity = quantityMain == null ? parentItem.Balance * order.Quantity
+                                                            : quantityMain?.Quantity * parentItem.Balance;
+                        else
+                            quantity = quantityMain == null ? -1
+                                                            : quantityMain.Quantity * parentItem.Balance;
+                        var newNeededItem = new NeededItems
                         {
-                            var quantityMain = result.FirstOrDefault(x => x.GoodId == parentItem.Id);
-                            int? quantity = 0;
-                            if (parentItem.ParentItemId == order.GoodsId)
-                                quantity = quantityMain == null ? itemNeeded.Balance * order.Quantity
-                                                                : quantityMain?.Quantity * itemNeeded.Balance;
-                            else
-                                quantity = quantityMain == null ? -1
-                                                                : quantityMain.Quantity * itemNeeded.Balance;
-                            var newNeededItem = new NeededItems
-                            {
-                                IsMain = false,
-                                GoodId = itemNeeded.Id,
-                                ParentItemId = parentItem.Id,
-                                Quantity = quantity.Value
-                            };
-                            result.Add(newNeededItem);
-                        }
+                            IsMain = false,
+                            GoodId = parentItem.Id,
+                            ParentItemId = parentItem.Id,
+                            Quantity = quantity.Value
+                        };
+                        result.Add(newNeededItem);
                     }
                     
                     needItems.AddRange(needItem);
