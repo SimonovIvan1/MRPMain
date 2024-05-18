@@ -161,7 +161,7 @@ namespace MRP_DAL.Helpers
                     parentItems.AddRange(needItem);
                 }
             }
-            return result;
+            return result.Where(x => x.IsMain).ToList();
         }
 
         private async Task<List<GoodsDto>> GetParentItems(Guid goodId)
