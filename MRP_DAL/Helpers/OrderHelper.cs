@@ -1,4 +1,5 @@
 ﻿using ExternalModels;
+using ExternalModels.Dto;
 using ExternalModels.PublicApiDto;
 using Microsoft.EntityFrameworkCore;
 using MRP_DAL.Entity;
@@ -71,27 +72,15 @@ namespace MRP_DAL.Helpers
         }
 
         //Метод для разложения заказа
-        public async void ProcessOrder(Guid orderId)
+        public async Task<List<NeededItems>> ProcessOrder(Guid orderId)
         {
             var order = await _db.Order
                 .FirstOrDefaultAsync(x => x.Id == orderId);
-            if (order == null) return;
-            var parentItemsDal = await (from g in _db.Goods
-                                 join gp in _db.GoodsParams on g.Id equals gp.GoodId
-                                 where gp.IsMainItem == true
-                                 select new GoodsDto()
-                                 {
-                                     Id = g.Id,
-                                     Description = gp.Description,
-                                     Name = gp.Name,
-                                     Price = gp.Price,
-                                     SupplierId = g.SupplierId,
-                                     Balance = gp.Balance,
-                                     IsMainItem = gp.IsMainItem,
-                                     ParentItemId = g.ParentItemId
-                                 }).ToListAsync();
+            if (order == null) throw new Exception("Заказа не существует");
+            
             var parentItems = await GetParentItems(order.GoodsId);
             var needItems = new List<GoodsDto>();
+            var result = new List<NeededItems>();
             while (parentItems.Count != 0)
             {
                 var copyParents = new List<GoodsDto>((IEnumerable<GoodsDto>)parentItems);
@@ -99,17 +88,36 @@ namespace MRP_DAL.Helpers
                 foreach (var parentItem in copyParents)
                 {
                     if (parentItem.ParentItemId == null) continue;
-                    var needItem = parentItemsDal.FirstOrDefault(x => x.Id == parentItem.ParentItemId);
-                    if (needItem == null) throw new Exception("Зависимого товара не существует!");
-                    needItems.Add(needItem);
-                    parentItems.Add(needItem);
+                    var needItem = await GetParentItems(parentItem.Id);
+                    if(needItem.Count == 0)
+                    {
+                        var quantityMain = result.FirstOrDefault(x => x.ParentItemId == parentItem.Id);
+                        var newNeededItem = new NeededItems
+                        {
+                            IsMain = true,
+                            GoodId = parentItem.Id,
+                            ParentItemId = parentItem.Id,
+                            Quantity = quantityMain.Quantity * parentItem.Balance
+                        };
+                        result.Add(newNeededItem);
+                    }
+                    needItems.AddRange(needItem);
+                    parentItems.AddRange(needItem);
+                    foreach(var itemNeeded in needItem)
+                    {
+                        var quantityMain = result.FirstOrDefault(x => x.ParentItemId == parentItem.Id);
+                        var newNeededItem = new NeededItems
+                        {
+                            IsMain = false,
+                            GoodId = itemNeeded.Id,
+                            ParentItemId = parentItem.Id,
+                            Quantity = quantityMain.Quantity * itemNeeded.Balance
+                        };
+                        result.Add(newNeededItem);
+                    }
                 }
             }
-            order.OrderStatusId = (int)OrderStatusType.AwaitingSupply;
-            order.ExpectedDelivery = DateTime.UtcNow.AddDays(7);
-            order.StatusDescription = $"Ваши товары будут доступны для получения после {order.ExpectedDelivery}";
-            _db.Order.Update(order);
-            await _db.SaveChangesAsync();
+            return result;
         }
 
         private async Task<List<GoodsDto>> GetParentItems(Guid goodId)
@@ -119,7 +127,7 @@ namespace MRP_DAL.Helpers
             if (good == null) throw new Exception("Товара не существует");
             var parentItem = await (from g in _db.Goods
                                     join gp in _db.GoodsParams on g.Id equals gp.GoodId
-                                    where gp.IsMainItem == true
+                                    where g.ParentItemId == good.Id
                                     select new GoodsDto()
                                     {
                                         Id = g.Id,
@@ -129,7 +137,7 @@ namespace MRP_DAL.Helpers
                                         SupplierId = g.SupplierId,
                                         Balance = gp.Balance,
                                         IsMainItem = gp.IsMainItem,
-                                        ParentItemId = g.ParentItemId
+                                        ParentItemId = g.ParentItemId,
                                     }).ToListAsync();
             parentItems.AddRange(parentItem);
             return parentItems;
