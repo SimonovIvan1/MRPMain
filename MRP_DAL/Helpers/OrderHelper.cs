@@ -102,7 +102,7 @@ namespace MRP_DAL.Helpers
                         {
                             IsMain = true,
                             GoodId = parentItem.Id,
-                            ParentItemId = parentItem.Id,
+                            ParentItemId = quantityMain?.GoodId,
                             Quantity = quantity
                         };
                         result.Add(newNeededItem);
@@ -123,7 +123,7 @@ namespace MRP_DAL.Helpers
                         {
                             IsMain = false,
                             GoodId = parentItem.Id,
-                            ParentItemId = parentItem.Id,
+                            ParentItemId = quantityMain?.GoodId,
                             Quantity = quantity.Value
                         };
                         result.Add(newNeededItem);
@@ -139,11 +139,9 @@ namespace MRP_DAL.Helpers
         private async Task<List<GoodsDto>> GetParentItems(Guid goodId)
         {
             var parentItems = new List<GoodsDto>();
-            var good = await _db.Good.FirstOrDefaultAsync(x => x.Id == goodId);
-            if (good == null) throw new Exception("Товара не существует");
             var parentItem = await (from g in _db.Good
                                     join gp in _db.GoodsParams on g.Id equals gp.GoodId
-                                    where g.ParentItemId == good.Id
+                                    where g.ParentItemId == goodId
                                     select new GoodsDto()
                                     {
                                         Id = g.Id,
