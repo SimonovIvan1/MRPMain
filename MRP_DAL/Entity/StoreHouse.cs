@@ -8,6 +8,6 @@ namespace MRP_DAL.Entity
         public Guid GoodId { get; set; }
         public int Count { get; set; }
         [ForeignKey("GoodId")]
-        public GoodsDAL Good{ get; set; }
+        public GoodDAL Good{ get; set; }
     }
 }

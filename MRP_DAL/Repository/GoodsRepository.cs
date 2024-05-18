@@ -18,10 +18,10 @@ namespace MRP_DAL.Repository
         {
             if (item.Id != null)
             {
-                var goodsDb = await _db.Goods.FirstOrDefaultAsync(x => x.Id == item.Id);
+                var goodsDb = await _db.Good.FirstOrDefaultAsync(x => x.Id == item.Id);
                 if (goodsDb != null) throw new Exception("Товар уже есть в базе!");
             }
-            var good = new GoodsDAL()
+            var good = new GoodDAL()
             {
                 Id = Guid.NewGuid(),
                 ParentItemId = item.ParentItemId,
@@ -34,9 +34,9 @@ namespace MRP_DAL.Repository
                 Price = item.Price,
                 IsMainItem = item.IsMainItem,
                 GoodId = good.Id,
-                Balance = item.Balance
+                Quantity = item.Balance
             };
-            await _db.Goods.AddAsync(good);
+            await _db.Good.AddAsync(good);
             await Save();
             await _db.GoodsParams.AddAsync(goodParams);
             await Save();
@@ -44,14 +44,14 @@ namespace MRP_DAL.Repository
 
         public async Task Delete(Guid id)
         {
-            var client = await _db.Goods.FirstOrDefaultAsync(x => x.Id == id);
+            var client = await _db.Good.FirstOrDefaultAsync(x => x.Id == id);
             if (client == null) return;
-            _db.Goods.Remove(client);
+            _db.Good.Remove(client);
         }
 
         public async Task<GoodsDto?> Get(Guid id)
         {
-            var good = await _db.Goods.FirstOrDefaultAsync(x => x.Id == id);
+            var good = await _db.Good.FirstOrDefaultAsync(x => x.Id == id);
             if (good == null) return default;
             var goodParams = await _db.GoodsParams.FirstOrDefaultAsync(x => x.GoodId == good.Id);
             var clientDto = new GoodsDto()
@@ -61,7 +61,7 @@ namespace MRP_DAL.Repository
                 Name = goodParams.Name,
                 Price = goodParams.Price,
                 SupplierId = good.SupplierId,
-                Balance = goodParams.Balance,
+                Balance = goodParams.Quantity,
                 IsMainItem = goodParams.IsMainItem,
                 ParentItemId = good.ParentItemId
             };
@@ -70,7 +70,7 @@ namespace MRP_DAL.Repository
 
         public async Task<GoodsDto[]> GetAll()
         {
-            var goods = await _db.Goods.ToArrayAsync();
+            var goods = await _db.Good.ToArrayAsync();
             var goodsDtos = new List<GoodsDto>();
             foreach (var good in goods)
             {
@@ -82,7 +82,7 @@ namespace MRP_DAL.Repository
                     Name = goodParams.Name,
                     Price = goodParams.Price,
                     SupplierId = good.SupplierId,
-                    Balance = goodParams.Balance,
+                    Balance = goodParams.Quantity,
                     IsMainItem = goodParams.IsMainItem,
                     ParentItemId = good.ParentItemId
                 };
@@ -98,7 +98,7 @@ namespace MRP_DAL.Repository
 
         public async Task Update(GoodsDto item)
         {
-            var client = await _db.Goods.FirstOrDefaultAsync(x => x.Id == item.Id);
+            var client = await _db.Good.FirstOrDefaultAsync(x => x.Id == item.Id);
             if (client == null) return;
             _db.Update(client);
             await Save();

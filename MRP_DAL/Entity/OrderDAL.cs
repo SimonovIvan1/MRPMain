@@ -20,6 +20,7 @@ namespace MRP_DAL.Entity
 #nullable disable
         public Guid GoodsId { get; set; }
         public int Quantity { get; set; }
+        [ForeignKey("GoodId")]
         public Goods Goods { get; set; }
         public ClientDAL Client { get; set; }
         public OrderStatusDAL OrderStatus { get; set; }

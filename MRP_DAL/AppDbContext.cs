@@ -12,11 +12,10 @@ namespace MRP_DAL
         }
         internal DbSet<OrderStatusDAL> OrderStatus { get; set; }
         internal DbSet<ClientDAL> Client { get; set; }
-        internal DbSet<GoodsDAL> Goods { get; set; }
         internal DbSet<GoodsForSupplierDAL> GoodsForSuppliers { get; set; }
         internal DbSet<OrderDAL> Order { get; set; }
-        internal DbSet<SupplierDAL> Supplier { get; set; }
         internal DbSet<GoodsParamsDAL> GoodsParams { get; set; }
         internal DbSet<InvoiceDAL> Invoice { get; set; }
+        internal DbSet<GoodDAL> Good { get; set; }
     }
 }

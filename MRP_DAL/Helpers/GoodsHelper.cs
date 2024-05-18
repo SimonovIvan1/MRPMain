@@ -19,7 +19,7 @@ namespace MRP_Domain.Helpers
             var parentItemsDal = new List<GoodsDto>();
             if(id == null)
             {
-                parentItemsDal = await (from g in _db.Goods
+                parentItemsDal = await (from g in _db.Good
                                         join gp in _db.GoodsParams on g.Id equals gp.GoodId
                                         where gp.IsMainItem == true
                                         select new GoodsDto()
@@ -29,14 +29,14 @@ namespace MRP_Domain.Helpers
                                             Name = gp.Name,
                                             Price = gp.Price,
                                             SupplierId = g.SupplierId,
-                                            Balance = gp.Balance,
+                                            Balance = gp.Quantity,
                                             IsMainItem = gp.IsMainItem,
                                             ParentItemId = g.ParentItemId
                                         }).ToListAsync();
             }
             else
             {
-                parentItemsDal = await (from g in _db.Goods
+                parentItemsDal = await (from g in _db.Good
                                         join gp in _db.GoodsParams on g.Id equals gp.GoodId
                                         where g.Id == id
                                         select new GoodsDto()
@@ -46,7 +46,7 @@ namespace MRP_Domain.Helpers
                                             Name = gp.Name,
                                             Price = gp.Price,
                                             SupplierId = g.SupplierId,
-                                            Balance = gp.Balance,
+                                            Balance = gp.Quantity,
                                             IsMainItem = gp.IsMainItem,
                                             ParentItemId = g.ParentItemId
                                         }).ToListAsync();
@@ -60,7 +60,7 @@ namespace MRP_Domain.Helpers
                 parentItems.Clear();
                 foreach (var parentItem in copyParents)
                 {
-                    var childItem = await (from g in _db.Goods
+                    var childItem = await (from g in _db.Good
                                           join gp in _db.GoodsParams on g.Id equals gp.GoodId
                                           where g.ParentItemId == parentItem.Id
                                           select new GoodsDto()
@@ -70,7 +70,7 @@ namespace MRP_Domain.Helpers
                                               Name = gp.Name,
                                               Price = gp.Price,
                                               SupplierId = g.SupplierId,
-                                              Balance = gp.Balance,
+                                              Balance = gp.Quantity,
                                               IsMainItem = gp.IsMainItem,
                                               ParentItemId = g.ParentItemId
                                           }).FirstOrDefaultAsync();
@@ -79,10 +79,10 @@ namespace MRP_Domain.Helpers
                     parentItems.Add(childItem);
                 }
             }
-            var mainItem = await _db.Goods.FirstAsync(x => x.Id == needItems[0].ParentItemId);
+            var mainItem = await _db.Good.FirstAsync(x => x.Id == needItems[0].ParentItemId);
             if (!isDelete)
             {
-                var mainItemInfo = await (from g in _db.Goods
+                var mainItemInfo = await (from g in _db.Good
                                           join gp in _db.GoodsParams on g.Id equals gp.GoodId
                                           where g.Id == mainItem.Id
                                           select new GoodsDto()
@@ -92,7 +92,7 @@ namespace MRP_Domain.Helpers
                                               Name = gp.Name,
                                               Price = gp.Price,
                                               SupplierId = g.SupplierId,
-                                              Balance = gp.Balance,
+                                              Balance = gp.Quantity,
                                               IsMainItem = gp.IsMainItem,
                                               ParentItemId = g.ParentItemId
                                           }).FirstAsync();
@@ -104,11 +104,11 @@ namespace MRP_Domain.Helpers
             needItems.Reverse();
             foreach(var item in needItems)
             {
-                var deletedItem = await _db.Goods.FirstOrDefaultAsync(x => x.Id == item.Id);
-                _db.Goods.Remove(deletedItem);
+                var deletedItem = await _db.Good.FirstOrDefaultAsync(x => x.Id == item.Id);
+                _db.Good.Remove(deletedItem);
                 await _db.SaveChangesAsync();
             }
-            _db.Goods.Remove(mainItem);
+            _db.Good.Remove(mainItem);
             await _db.SaveChangesAsync();
             return needItems;
         }
@@ -118,9 +118,9 @@ namespace MRP_Domain.Helpers
             var parentItems = new List<GoodsDto>();
             foreach (var item in goods)
             {
-                var good = await _db.Goods.FirstOrDefaultAsync(x => x.Id == item.Id);
+                var good = await _db.Good.FirstOrDefaultAsync(x => x.Id == item.Id);
                 if (good == null) throw new Exception("Товара не существует");
-                var parentItem = await (from g in _db.Goods
+                var parentItem = await (from g in _db.Good
                                         join gp in _db.GoodsParams on g.Id equals gp.GoodId
                                         where gp.IsMainItem == true
                                         select new GoodsDto()
@@ -130,7 +130,7 @@ namespace MRP_Domain.Helpers
                                             Name = gp.Name,
                                             Price = gp.Price,
                                             SupplierId = g.SupplierId,
-                                            Balance = gp.Balance,
+                                            Balance = gp.Quantity,
                                             IsMainItem = gp.IsMainItem,
                                             ParentItemId = g.ParentItemId
                                         }).FirstOrDefaultAsync();

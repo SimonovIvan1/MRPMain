@@ -4,6 +4,7 @@ using MRP_DAL.Repository;
 using MRP_DAL;
 using MRP_DAL.Helpers;
 using ExternalModels.PublicApiDto;
+using ExternalModels.Dto;
 
 namespace MRP_Admin_Api.Controllers
 {
@@ -26,7 +27,7 @@ namespace MRP_Admin_Api.Controllers
         public async Task<IActionResult> Create(NewOrderDTO newOrder) => Ok(await _orderHelper.CreateOrder(newOrder));
         
         [HttpPost("process-order")]
-        public void ProcessOrder(Guid orderId) => _orderHelper.ProcessOrder(orderId);
+        public async Task<List<NeededItems>> ProcessOrder(Guid orderId) => await _orderHelper.ProcessOrder(orderId);
 
     }
 }

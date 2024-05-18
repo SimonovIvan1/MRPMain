@@ -1,12 +1,15 @@
-﻿namespace MRP_DAL.Entity
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MRP_DAL.Entity
 {
 #nullable disable
-    internal class GoodsDAL
+    internal class GoodDAL
     {
+        [Key]
         public Guid Id { get; set; }
         public Guid SupplierId { get; set; }
         public Guid? ParentItemId { get; set; }
-        public SupplierDAL Supplier { get; set; }
         public GoodsParamsDAL GoodsParams { get; set; }
     }
 }

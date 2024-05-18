@@ -87,34 +87,53 @@ namespace MRP_DAL.Helpers
                 parentItems.Clear();
                 foreach (var parentItem in copyParents)
                 {
-                    if (parentItem.ParentItemId == null) continue;
                     var needItem = await GetParentItems(parentItem.Id);
                     if(needItem.Count == 0)
                     {
-                        var quantityMain = result.FirstOrDefault(x => x.ParentItemId == parentItem.Id);
+                        var quantityMain = result.FirstOrDefault(x => x.GoodId == parentItem.Id);
+                        int quantity = 0;
+                        if (parentItem.ParentItemId == order.GoodsId)
+                            quantity = quantityMain == null ? parentItem.Balance * order.Quantity
+                                                            : quantityMain.Quantity * parentItem.Balance;
+                        else
+                            quantity = quantityMain == null ? -2
+                                                            : quantityMain.Quantity * parentItem.Balance;
                         var newNeededItem = new NeededItems
                         {
                             IsMain = true,
                             GoodId = parentItem.Id,
                             ParentItemId = parentItem.Id,
-                            Quantity = quantityMain.Quantity * parentItem.Balance
+                            Quantity = quantity
                         };
                         result.Add(newNeededItem);
+                        continue;
                     }
+
+                    else
+                    {
+                        foreach (var itemNeeded in needItem)
+                        {
+                            var quantityMain = result.FirstOrDefault(x => x.GoodId == parentItem.Id);
+                            int? quantity = 0;
+                            if (parentItem.ParentItemId == order.GoodsId)
+                                quantity = quantityMain == null ? itemNeeded.Balance * order.Quantity
+                                                                : quantityMain?.Quantity * itemNeeded.Balance;
+                            else
+                                quantity = quantityMain == null ? -1
+                                                                : quantityMain.Quantity * itemNeeded.Balance;
+                            var newNeededItem = new NeededItems
+                            {
+                                IsMain = false,
+                                GoodId = itemNeeded.Id,
+                                ParentItemId = parentItem.Id,
+                                Quantity = quantity.Value
+                            };
+                            result.Add(newNeededItem);
+                        }
+                    }
+                    
                     needItems.AddRange(needItem);
                     parentItems.AddRange(needItem);
-                    foreach(var itemNeeded in needItem)
-                    {
-                        var quantityMain = result.FirstOrDefault(x => x.ParentItemId == parentItem.Id);
-                        var newNeededItem = new NeededItems
-                        {
-                            IsMain = false,
-                            GoodId = itemNeeded.Id,
-                            ParentItemId = parentItem.Id,
-                            Quantity = quantityMain.Quantity * itemNeeded.Balance
-                        };
-                        result.Add(newNeededItem);
-                    }
                 }
             }
             return result;
@@ -123,9 +142,9 @@ namespace MRP_DAL.Helpers
         private async Task<List<GoodsDto>> GetParentItems(Guid goodId)
         {
             var parentItems = new List<GoodsDto>();
-            var good = await _db.Goods.FirstOrDefaultAsync(x => x.Id == goodId);
+            var good = await _db.Good.FirstOrDefaultAsync(x => x.Id == goodId);
             if (good == null) throw new Exception("Товара не существует");
-            var parentItem = await (from g in _db.Goods
+            var parentItem = await (from g in _db.Good
                                     join gp in _db.GoodsParams on g.Id equals gp.GoodId
                                     where g.ParentItemId == good.Id
                                     select new GoodsDto()
@@ -135,12 +154,13 @@ namespace MRP_DAL.Helpers
                                         Name = gp.Name,
                                         Price = gp.Price,
                                         SupplierId = g.SupplierId,
-                                        Balance = gp.Balance,
+                                        Balance = gp.Quantity,
                                         IsMainItem = gp.IsMainItem,
                                         ParentItemId = g.ParentItemId,
                                     }).ToListAsync();
             parentItems.AddRange(parentItem);
             return parentItems;
         }
+
     }
 }

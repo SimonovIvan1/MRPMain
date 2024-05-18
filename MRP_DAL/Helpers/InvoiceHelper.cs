@@ -21,7 +21,7 @@ namespace MRP_DAL.Helpers
             foreach(var invoice in invoices)
             {
                 var invDb = await _db.GoodsParams.FirstAsync(x => x.GoodId == invoice.GoodId);
-                invDb.Balance += invoice.Quantity;
+                invDb.Quantity += invoice.Quantity;
                 _db.GoodsParams.Update(invDb);
                 await _db.SaveChangesAsync();
                 invoice.IsAccounting = true;

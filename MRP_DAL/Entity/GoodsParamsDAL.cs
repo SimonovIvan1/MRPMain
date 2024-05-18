@@ -1,4 +1,6 @@
-﻿namespace MRP_DAL.Entity
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MRP_DAL.Entity
 {
     internal class GoodsParamsDAL
     {
@@ -8,7 +10,8 @@
         public string Description { get; set; }
         public double Price { get; set; }
         public bool IsMainItem { get; set; }
-        public int Balance { get; set; }
-        public GoodsDAL Good { get; set; }
+        public int Quantity { get; set; }
+        [ForeignKey("GoodId")]
+        public GoodDAL Good { get; set; }
     }
 }
