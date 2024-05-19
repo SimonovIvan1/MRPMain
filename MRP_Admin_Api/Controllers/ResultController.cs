@@ -20,7 +20,7 @@ namespace MRP_Admin_Api.Controllers
         }
 
         [HttpPut("get-result-tree")]
-        public async Task MakeAnAccount(Guid orderId)
+        public async Task<List<NeededItems>> MakeAnAccount(Guid orderId)
             => await _helper.GetNeededItems(orderId);
     }
 }
