@@ -23,7 +23,7 @@ namespace MRP_Admin_Api.Controllers
         }
 
         [HttpPut("get-store-gouse-tree")]
-        public async Task MakeAnAccount(Guid goodId) => await _helper.ProcessOrder(goodId);
+        public async Task<List<NeededItems>> MakeAnAccount(Guid goodId) => await _helper.ProcessOrder(goodId);
 
 
         [HttpPut("create-or-update")]

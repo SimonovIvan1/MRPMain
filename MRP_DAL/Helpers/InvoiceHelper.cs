@@ -72,7 +72,7 @@ namespace MRP_DAL.Helpers
         public async Task<List<NeededItems>> ProcessOrder(Guid goodId)
         {
             var order = await _db.StoreHouse
-                .FirstOrDefaultAsync(x => x.Id == goodId);
+                .FirstOrDefaultAsync(x => x.GoodId == goodId);
             if (order == null) throw new Exception("Товара на складе не существует");
 
             var parentItems = await GetParentItems(order.GoodId);
@@ -117,7 +117,6 @@ namespace MRP_DAL.Helpers
                         }
 
                         result.Add(newNeededItem);
-                        continue;
                     }
 
                     else

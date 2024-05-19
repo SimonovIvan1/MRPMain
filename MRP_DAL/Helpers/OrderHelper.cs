@@ -64,7 +64,9 @@ namespace MRP_DAL.Helpers
                 OrderStatusId = (int)OrderStatusType.InProcessing,
                 StatusDescription = "Заказ на стадии обработки. Дата возможного получения товаров " +
                 "со склада будет доступна после обработки. Пожалуйста, ожидайте.",
-                TotalCost = order.TotalCost
+                TotalCost = order.TotalCost,
+                GoodsId = order.GoodsId,
+                Quantity = order.Quantity
             };
             await _db.Order.AddAsync(newOrderDb);
             await _db.SaveChangesAsync();
