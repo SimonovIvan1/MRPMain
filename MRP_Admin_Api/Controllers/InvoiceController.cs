@@ -22,8 +22,13 @@ namespace MRP_Admin_Api.Controllers
             _repository = new InvoiceRepository(db);
         }
 
-        [HttpPut("make-an-account")]
-        public async Task MakeAnAccount() => await _helper.MakeAnAccount();
+        [HttpPut("get-store-gouse-tree")]
+        public async Task MakeAnAccount(Guid goodId) => await _helper.ProcessOrder(goodId);
+
+
+        [HttpPut("create-or-update")]
+        public async Task MakeAnAccount(InvoiceDto newInvoice) 
+            => await _helper.CreateInvoice(newInvoice);
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -71,5 +76,8 @@ namespace MRP_Admin_Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPut("make-an-account")]
+        public async Task MakeAnAccount() => await _helper.MakeAnAccount();
     }
 }
