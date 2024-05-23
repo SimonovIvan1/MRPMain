@@ -33,7 +33,7 @@
             </tr>
         }
         <tr>
-            <td><a href="~/Result/GetResult/?dateTimeNow=@DateTime.Now">Посчитать остатки по заказам на данный момент</a></td>
+            <td><a href="~/Result/GetResult/?date=@DateTime.UtcNow.ToString()">Посчитать остатки по заказам на данный момент</a></td>
         </tr>
     </table>
 </body>

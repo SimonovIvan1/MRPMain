@@ -184,7 +184,15 @@ namespace MRP_DAL.Helpers
 
         public async Task<List<NeededItems>> ProcessOrder(DateTime timeNow)
         {
-            var allOrders = await _db.Order.Where(x => x.DateTimeCreated < timeNow).ToListAsync();
+            var ordersNotFiltered = await _db.Order.ToListAsync();
+            var allOrders = new List<OrderDAL>();
+            foreach (var orderNotFilter in ordersNotFiltered)
+            {
+                if (DateTime.Parse(orderNotFilter.DateTimeCreated) > DateTime.UtcNow)
+                    ordersNotFiltered.Remove(orderNotFilter);
+                else allOrders.Add(await _db.Order.FirstAsync(x => x.Id == orderNotFilter.Id));
+            }
+
             var result = new List<NeededItems>();
             foreach (var order in allOrders)
             {
@@ -208,7 +216,7 @@ namespace MRP_DAL.Helpers
                             var newNeededItem = new NeededItems();
                             if (parentItem.ParentItemId == order.GoodsId)
                             {
-                                quantity = quantityMain == null ? parentItem.Balance * order.Quantity
+                                quantity = quantityMain == null ? parentItem.Balance * orders.Count
                                                                 : quantityMain.Quantity * parentItem.Balance;
                                 newNeededItem = new NeededItems
                                 {
@@ -242,7 +250,7 @@ namespace MRP_DAL.Helpers
                             var newNeededItem = new NeededItems();
                             if (parentItem.ParentItemId == order.GoodsId)
                             {
-                                quantity = quantityMain == null ? parentItem.Balance * order.Quantity
+                                quantity = quantityMain == null ? parentItem.Balance * orders.Count
                                                                 : quantityMain?.Quantity * parentItem.Balance;
                                 newNeededItem = new NeededItems
                                 {

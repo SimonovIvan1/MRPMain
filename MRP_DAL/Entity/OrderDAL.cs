@@ -10,7 +10,7 @@ namespace MRP_DAL.Entity
         [Key]
         public Guid Id { get; set; }
         public Guid ClientId { get; set; }
-        public DateTime DateTimeCreated { get; set; }
+        public string DateTimeCreated { get; set; }
         public string Address { get; set; }
         public double TotalCost { get; set; }
         public int OrderStatusId { get; set; }

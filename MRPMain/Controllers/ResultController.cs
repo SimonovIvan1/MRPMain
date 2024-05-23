@@ -16,7 +16,7 @@ namespace MRP_Admin_Api.Controllers
             _helper = new ResultHelper(db);
         }
 
-        public async Task<IActionResult> GetResult(DateTime dateTimeNow)
-            => View(await _helper.GetNeededItems(dateTimeNow));
+        public async Task<IActionResult> GetResult([FromQuery]string date)
+            => View(await _helper.GetNeededItems(date));
     }
 }

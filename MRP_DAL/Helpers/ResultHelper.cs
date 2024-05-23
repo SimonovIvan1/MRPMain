@@ -1,5 +1,6 @@
 ﻿using ExternalModels.Dto;
 using Microsoft.EntityFrameworkCore;
+using MRP_DAL.Entity;
 using MRP_Domain.Entity;
 
 namespace MRP_DAL.Helpers
@@ -17,9 +18,17 @@ namespace MRP_DAL.Helpers
             _orderHelper = new OrderHelper(db);
         }
 
-        public async Task<List<NeededItems>> GetNeededItems(DateTime dateTimeNow)
+        public async Task<List<NeededItems>> GetNeededItems(string date)
         {
-            var orders = await _db.Order.Where(x => x.DateTimeCreated < dateTimeNow).ToListAsync();
+            var dateTimeNow = DateTime.Parse(date);
+            var ordersNotFiltered = await _db.Order.ToListAsync();
+            var orders = new List<OrderDAL>();
+            foreach(var orderNotFilter in ordersNotFiltered)
+            {
+                if (DateTime.Parse(orderNotFilter.DateTimeCreated) > DateTime.UtcNow)
+                    ordersNotFiltered.Remove(orderNotFilter);
+                else orders.Add(await _db.Order.FirstAsync(x => x.Id == orderNotFilter.Id));
+            }
             var resultItems = new List<NeededItems>();
             foreach(var order in orders)
             {
