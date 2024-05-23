@@ -1,0 +1,37 @@
+﻿@using MRP_Domain.Entity
+@model Order[]
+@{
+    ViewData["Title"] = "Заказы";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Все заказы</title>
+</head>
+<body>
+    <h3>Заказы</h3>
+    <table>
+        <tr>
+            <td>Идентификатор заказа</td>
+            <td>Идентификатор товара</td>
+            <td>Количество товаров</td>
+            <td>Дата создания</td>
+            <td></td>
+        </tr>
+        @foreach (var phone in Model)
+        {
+            <tr>
+                <td>@phone.Id</td>
+                <td>@phone.GoodsId</td>
+                <td>@phone.Quantity</td>
+                <td>@phone.DateTimeCreated</td>
+                <td><a href="~/Home/Buy/@phone.Id">Купить</a></td>
+                <td><a href="~/Home/Buy/@phone.Id">Сделать заказ</a></td>
+                <td><a href="~/Order/GetTree/?orderId=@phone.Id">Разложить по заказу</a></td>
+            </tr>
+        }
+    </table>
+</body>
+</html>

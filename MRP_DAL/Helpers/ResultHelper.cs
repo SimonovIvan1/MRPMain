@@ -20,7 +20,7 @@ namespace MRP_DAL.Helpers
         {
             var order = await _db.Order.FirstOrDefaultAsync(x => x.Id == orderId);
             if(order == null) return new List<NeededItems>();
-            var itemsInOrder = await _orderHelper.ProcessOrder(orderId);
+            var itemsInOrder = await _orderHelper.GetTree(orderId);
             var itemsInStore = await _invoiceHelper.ProcessOrder(order.GoodsId);
             var result = new List<NeededItems>();
             foreach(var item in itemsInOrder)

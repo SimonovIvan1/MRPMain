@@ -17,14 +17,12 @@ namespace MRP_Admin_Api.Controllers
             _orderHelper = new OrderHelper(db);
         }
 
-        [HttpGet]
         public async Task<IActionResult> GetAll() => View(await _orderHelper.GetAll());
 
-        [HttpPost]
         public async Task<IActionResult> Create(NewOrderDTO newOrder) => View(await _orderHelper.CreateOrder(newOrder));
         
-        [HttpPost("process-order")]
-        public async Task<IActionResult> ProcessOrder(Guid orderId) => View(await _orderHelper.ProcessOrder(orderId));
+        public async Task<IActionResult> GetTree(Guid? orderId) 
+            => View(await _orderHelper.GetTree(orderId.Value));
 
     }
 }

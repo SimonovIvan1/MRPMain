@@ -32,7 +32,9 @@ namespace MRP_DAL.Helpers
                     OrderStatusId = orderDal.OrderStatusId,
                     StatusDescription = orderDal.StatusDescription,
                     ExpectedDelivery = orderDal.ExpectedDelivery,
-                    TotalCost = orderDal.TotalCost
+                    TotalCost = orderDal.TotalCost,
+                    Quantity = orderDal.Quantity,
+                    GoodsId = orderDal.GoodsId
                 };
                 orders.Add(order);
             }
@@ -74,7 +76,7 @@ namespace MRP_DAL.Helpers
         }
 
         //Метод для разложения заказа
-        public async Task<List<NeededItems>> ProcessOrder(Guid orderId)
+        public async Task<List<NeededItems>> GetTree(Guid orderId)
         {
             var order = await _db.Order
                 .FirstOrDefaultAsync(x => x.Id == orderId);
