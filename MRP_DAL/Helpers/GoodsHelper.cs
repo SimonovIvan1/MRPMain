@@ -20,7 +20,7 @@ namespace MRP_Domain.Helpers
             var order = await _db.Good
                 .FirstOrDefaultAsync(x => x.Id == id);
             var paramsGood = await _db.GoodsParams.FirstOrDefaultAsync(x => x.GoodId == order.Id);
-            var count = paramsGood == null ? 1 : paramsGood.Quantity;
+            var count = 1;
             if (order == null) throw new Exception("Товара на складе не существует");
 
             var parentItems = await GetParentItems(order.Id);
