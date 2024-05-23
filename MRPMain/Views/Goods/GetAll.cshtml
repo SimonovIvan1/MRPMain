@@ -1,0 +1,37 @@
+﻿@using ExternalModels
+@model GoodsDto[]
+@{
+    ViewData["Title"] = "Спецификации";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Магазин смартфонов</title>
+</head>
+<body>
+    <h3>Смартфоны</h3>
+    <table>
+        <tr>
+            <td>Идентификатор</td>
+            <td>Родитель</td>
+            <td>Название</td>
+            <td>Цена</td>
+            <td></td>
+        </tr>
+        @foreach (var phone in Model)
+        {
+            <tr>
+                <td>@phone.Id</td>
+                <td>@phone.ParentItemId</td>
+                <td>@phone.Name</td>
+                <td>@phone.Price</td>
+                <td><a href="~/Home/Buy/@phone.Id">Купить</a></td>
+                <td><a href="~/Home/Buy/@phone.Id">Сделать заказ</a></td>
+                <td><a href="~/Goods/GetTree/@phone.Id">Разложить</a></td>
+            </tr>
+        }
+    </table>
+</body>
+</html>

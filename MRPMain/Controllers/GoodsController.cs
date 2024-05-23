@@ -7,9 +7,6 @@ using MRP_Domain.Helpers;
 
 namespace MRP_Admin_Api.Controllers
 {
-    [ApiController]
-
-    [Route("api/admin/goods")]
     public class GoodsController : Controller
     {
         private readonly GoodsRepository _repository;
@@ -21,14 +18,13 @@ namespace MRP_Admin_Api.Controllers
             _goodsHelper = new GoodsHelper(db);
         }
 
-        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             try
             {
                 var clients = await _repository.GetAll();
                 if (clients == null) return NotFound("Товары пропали или их пока нет");
-                return Ok(clients);
+                return View(clients);
             }
             catch (Exception ex)
             {
@@ -67,6 +63,9 @@ namespace MRP_Admin_Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        
+        public async Task<IActionResult> GetTree(Guid? id)
+            => View(await _goodsHelper.GetParentsTree(id, false));
         
     }
 }
