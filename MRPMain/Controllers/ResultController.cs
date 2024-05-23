@@ -7,9 +7,6 @@ using ExternalModels.Dto;
 
 namespace MRP_Admin_Api.Controllers
 {
-    [ApiController]
-
-    [Route("api/admin/result")]
     public class ResultController : Controller
     {
         private readonly ResultHelper _helper;
@@ -19,8 +16,7 @@ namespace MRP_Admin_Api.Controllers
             _helper = new ResultHelper(db);
         }
 
-        [HttpPut("get-result-tree")]
-        public async Task<List<NeededItems>> MakeAnAccount(Guid orderId)
-            => await _helper.GetNeededItems(orderId);
+        public async Task<IActionResult> GetResult(DateTime dateTimeNow)
+            => View(await _helper.GetNeededItems(dateTimeNow));
     }
 }

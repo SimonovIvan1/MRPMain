@@ -1,0 +1,33 @@
+﻿@using ExternalModels.Dto
+@model InvoiceDto[]
+@{
+    ViewData["Title"] = "Поставки";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Все заказы</title>
+</head>
+<body>
+    <h3>Заказы</h3>
+    <table>
+        <tr>
+            <td>Идентификатор заказа</td>
+            <td>Количество поступления</td>
+            <td>Добавления</td>
+            <td></td>
+        </tr>
+        @foreach (var phone in Model)
+        {
+            <tr>
+                <td>@phone.GoodId</td>
+                <td>@phone.Quantity</td>
+                <td>@phone.AccountingTime</td>
+                <td><a href="~/Invoice/GetTree/?goodId=@phone.GoodId">Разложить по товару на складе</a></td>
+            </tr>
+        }
+    </table>
+</body>
+</html>

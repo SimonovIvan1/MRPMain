@@ -57,6 +57,7 @@ namespace MRP_DAL.Repository
             {
                 var clientDto = new InvoiceDto()
                 {
+                    Id = invoice.Id,
                     GoodId = invoice.GoodId,
                     Quantity = invoice.Quantity,
                     AccountingTime = invoice.AccountingTime,

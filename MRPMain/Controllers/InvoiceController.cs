@@ -8,9 +8,6 @@ using ExternalModels.Dto;
 
 namespace MRP_Admin_Api.Controllers
 {
-    [ApiController]
-
-    [Route("api/admin/invoices")]
     public class InvoiceController : Controller
     {
         private readonly InvoiceHelper _helper;
@@ -22,22 +19,20 @@ namespace MRP_Admin_Api.Controllers
             _repository = new InvoiceRepository(db);
         }
 
-        [HttpPut("get-store-gouse-tree")]
-        public async Task<List<NeededItems>> MakeAnAccount(Guid goodId) => await _helper.ProcessOrder(goodId);
+        public async Task<IActionResult> GetTree(Guid goodId) => View(await _helper.ProcessOrder(goodId));
 
 
         [HttpPut("create-or-update")]
         public async Task MakeAnAccount(InvoiceDto newInvoice) 
             => await _helper.CreateInvoice(newInvoice);
 
-        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             try
             {
                 var clients = await _repository.GetAll();
                 if (clients == null) return NotFound("Начисления товаров пропали или их пока нет");
-                return Ok(clients);
+                return View(clients);
             }
             catch (Exception ex)
             {

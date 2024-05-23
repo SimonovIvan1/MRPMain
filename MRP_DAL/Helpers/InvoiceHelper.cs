@@ -2,6 +2,7 @@
 using ExternalModels.Dto;
 using Microsoft.EntityFrameworkCore;
 using MRP_DAL.Entity;
+using MRP_Domain.Entity;
 
 namespace MRP_DAL.Helpers
 {
@@ -179,6 +180,102 @@ namespace MRP_DAL.Helpers
                                     }).ToListAsync();
             parentItems.AddRange(parentItem);
             return parentItems;
+        }
+
+        public async Task<List<NeededItems>> ProcessOrder(DateTime timeNow)
+        {
+            var allOrders = await _db.Order.Where(x => x.DateTimeCreated < timeNow).ToListAsync();
+            var result = new List<NeededItems>();
+            foreach (var order in allOrders)
+            {
+                var orders = await _db.StoreHouse
+                .FirstOrDefaultAsync(x => x.GoodId == order.GoodsId);
+
+                var parentItems = await GetParentItems(order.GoodsId);
+                var needItems = new List<GoodsDto>();
+                
+                while (parentItems.Count != 0)
+                {
+                    var copyParents = new List<GoodsDto>((IEnumerable<GoodsDto>)parentItems);
+                    parentItems.Clear();
+                    foreach (var parentItem in copyParents)
+                    {
+                        var needItem = await GetParentItems(parentItem.Id);
+                        if (needItem.Count == 0)
+                        {
+                            var quantityMain = result.FirstOrDefault(x => x.GoodId == parentItem.ParentItemId);
+                            int quantity = 0;
+                            var newNeededItem = new NeededItems();
+                            if (parentItem.ParentItemId == order.GoodsId)
+                            {
+                                quantity = quantityMain == null ? parentItem.Balance * order.Quantity
+                                                                : quantityMain.Quantity * parentItem.Balance;
+                                newNeededItem = new NeededItems
+                                {
+                                    IsMain = true,
+                                    GoodId = parentItem.Id,
+                                    ParentItemId = order.GoodsId,
+                                    Quantity = quantity
+                                };
+                            }
+
+                            else
+                            {
+                                quantity = quantityMain == null ? -2
+                                                                : quantityMain.Quantity * parentItem.Balance;
+                                newNeededItem = new NeededItems
+                                {
+                                    IsMain = true,
+                                    GoodId = parentItem.Id,
+                                    ParentItemId = quantityMain?.GoodId,
+                                    Quantity = quantity
+                                };
+                            }
+
+                            result.Add(newNeededItem);
+                        }
+
+                        else
+                        {
+                            var quantityMain = result.FirstOrDefault(x => x.GoodId == parentItem.ParentItemId);
+                            int? quantity = 0;
+                            var newNeededItem = new NeededItems();
+                            if (parentItem.ParentItemId == order.GoodsId)
+                            {
+                                quantity = quantityMain == null ? parentItem.Balance * order.Quantity
+                                                                : quantityMain?.Quantity * parentItem.Balance;
+                                newNeededItem = new NeededItems
+                                {
+                                    IsMain = false,
+                                    GoodId = parentItem.Id,
+                                    ParentItemId = order.GoodsId,
+                                    Quantity = quantity.Value
+                                };
+                            }
+
+                            else
+                            {
+                                quantity = quantityMain == null ? -1
+                                                                : quantityMain.Quantity * parentItem.Balance;
+                                newNeededItem = new NeededItems
+                                {
+                                    IsMain = false,
+                                    GoodId = parentItem.Id,
+                                    ParentItemId = quantityMain?.GoodId,
+                                    Quantity = quantity.Value
+                                };
+                            }
+
+                            result.Add(newNeededItem);
+                        }
+
+                        needItems.AddRange(needItem);
+                        parentItems.AddRange(needItem);
+                    }
+                }
+            }
+            
+            return result.Where(x => x.IsMain).ToList();
         }
     }
 }

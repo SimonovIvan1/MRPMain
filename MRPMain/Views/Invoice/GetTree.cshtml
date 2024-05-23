@@ -1,0 +1,34 @@
+﻿@using ExternalModels
+@using ExternalModels.Dto
+@model List<NeededItems>
+@{
+    ViewData["Title"] = "Разложение товара";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Товары, необходимые для сборки</title>
+</head>
+<body>
+    <h3>Товары</h3>
+    <table>
+        <tr>
+            <td>Деталь</td>
+            <td>Основной товар</td>
+            <td>Количество</td>
+            <td></td>
+        </tr>
+        @foreach (var phone in Model)
+        {
+            <tr>
+                <td>@phone.GoodId</td>
+                <td>@phone.ParentItemId</td>
+                <td>@phone.Quantity</td>
+                <td><a href="~/Order/GetAll/">Вернуться к заказам</a></td>
+            </tr>
+        }
+    </table>
+</body>
+</html>
