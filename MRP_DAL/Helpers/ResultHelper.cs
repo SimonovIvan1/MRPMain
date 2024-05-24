@@ -46,7 +46,7 @@ namespace MRP_DAL.Helpers
                 }
             }
             
-            var itemsInStore = await _invoiceHelper.ProcessOrder(dateTimeNow);
+            var itemsInStore = await _invoiceHelper.ProcessOrder();
             var resultStoreItems = new List<NeededItems>();
             foreach(var item in itemsInStore)
             {
@@ -62,6 +62,7 @@ namespace MRP_DAL.Helpers
             var result = new List<NeededItems>();
             foreach(var item in resultItems)
             {
+                var it = item;
                 var itemInStore = resultStoreItems.FirstOrDefault(x => x.GoodId == item.GoodId);
                 if(itemInStore == null)
                 {
@@ -69,8 +70,8 @@ namespace MRP_DAL.Helpers
                 }
                 else
                 {
-                    item.Quantity -= itemInStore.Quantity;
-                    result.Add(item);
+                    it.Quantity = it.Quantity - itemInStore.Quantity;
+                    result.Add(it);
                 }
             }
             return result;

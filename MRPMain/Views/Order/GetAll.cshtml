@@ -35,6 +35,24 @@
         <tr>
             <td><a href="~/Result/GetResult/?date=@DateTime.UtcNow.ToString()">Посчитать остатки по заказам на данный момент</a></td>
         </tr>
+
+        <td><a href="~/Order/Create/">Создать новый заказ</a></td>
+        <h2>Добавление нового заказа</h2>
+        <h3>Информация о заказе</h3>
+        <form method="post" action="Create">
+            <div>
+                <label for="clientId">Идентификатор клиента:</label>
+                <input type="text" name="clientId" value="" />
+                <label for="address">Адрес доставки:</label>
+                <input type="text" name="address" value="" />
+                <label for="goodId">Идентификатор заказа:</label>
+                <input type="text" name="goodId" value="" />
+                <label for="quantity">Идентификатор заказа:</label>
+                <input type="number" name="quantity" value="" />
+                <input type="Submit" value="Добавить" /><br />
+                <br />
+            </div>
+        </form>
     </table>
 </body>
 </html>

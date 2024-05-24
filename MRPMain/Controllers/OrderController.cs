@@ -19,9 +19,20 @@ namespace MRP_Admin_Api.Controllers
 
         public async Task<IActionResult> GetAll() => View(await _orderHelper.GetAll());
 
-        public async Task<IActionResult> Create(NewOrderDTO newOrder) => View(await _orderHelper.CreateOrder(newOrder));
-        
-        public async Task<IActionResult> GetTree(Guid? orderId) 
+        public async Task<IActionResult> Create(Guid clientId, string address, Guid goodId, int quantity)
+        {
+            var newOrder = new NewOrderDTO()
+            {
+                ClientId = clientId,
+                Address = address,
+                GoodId = goodId,
+                Quantity = quantity
+            };
+            await _orderHelper.CreateOrder(newOrder);
+            return Redirect("https://localhost:7201/Order/GetAll");
+        }
+
+            public async Task<IActionResult> GetTree(Guid? orderId) 
             => View(await _orderHelper.GetTree(orderId.Value));
 
     }

@@ -182,24 +182,15 @@ namespace MRP_DAL.Helpers
             return parentItems;
         }
 
-        public async Task<List<NeededItems>> ProcessOrder(DateTime timeNow)
+        public async Task<List<NeededItems>> ProcessOrder()
         {
-            var ordersNotFiltered = await _db.Order.ToListAsync();
-            var allOrders = new List<OrderDAL>();
-            foreach (var orderNotFilter in ordersNotFiltered)
-            {
-                if (DateTime.Parse(orderNotFilter.DateTimeCreated) > DateTime.UtcNow)
-                    ordersNotFiltered.Remove(orderNotFilter);
-                else allOrders.Add(await _db.Order.FirstAsync(x => x.Id == orderNotFilter.Id));
-            }
+            var ordersNotFiltered = await _db.StoreHouse.ToListAsync();
+            
 
             var result = new List<NeededItems>();
-            foreach (var order in allOrders)
+            foreach (var order in ordersNotFiltered)
             {
-                var orders = await _db.StoreHouse
-                .FirstOrDefaultAsync(x => x.GoodId == order.GoodsId);
-
-                var parentItems = await GetParentItems(order.GoodsId);
+                var parentItems = await GetParentItems(order.GoodId);
                 var needItems = new List<GoodsDto>();
                 
                 while (parentItems.Count != 0)
@@ -214,15 +205,15 @@ namespace MRP_DAL.Helpers
                             var quantityMain = result.FirstOrDefault(x => x.GoodId == parentItem.ParentItemId);
                             int quantity = 0;
                             var newNeededItem = new NeededItems();
-                            if (parentItem.ParentItemId == order.GoodsId)
+                            if (parentItem.ParentItemId == order.GoodId)
                             {
-                                quantity = quantityMain == null ? parentItem.Balance * orders.Count
+                                quantity = quantityMain == null ? parentItem.Balance * order.Count
                                                                 : quantityMain.Quantity * parentItem.Balance;
                                 newNeededItem = new NeededItems
                                 {
                                     IsMain = true,
                                     GoodId = parentItem.Id,
-                                    ParentItemId = order.GoodsId,
+                                    ParentItemId = order.GoodId,
                                     Quantity = quantity
                                 };
                             }
@@ -248,15 +239,15 @@ namespace MRP_DAL.Helpers
                             var quantityMain = result.FirstOrDefault(x => x.GoodId == parentItem.ParentItemId);
                             int? quantity = 0;
                             var newNeededItem = new NeededItems();
-                            if (parentItem.ParentItemId == order.GoodsId)
+                            if (parentItem.ParentItemId == order.GoodId)
                             {
-                                quantity = quantityMain == null ? parentItem.Balance * orders.Count
+                                quantity = quantityMain == null ? parentItem.Balance * order.Count
                                                                 : quantityMain?.Quantity * parentItem.Balance;
                                 newNeededItem = new NeededItems
                                 {
                                     IsMain = false,
                                     GoodId = parentItem.Id,
-                                    ParentItemId = order.GoodsId,
+                                    ParentItemId = order.GoodId,
                                     Quantity = quantity.Value
                                 };
                             }
