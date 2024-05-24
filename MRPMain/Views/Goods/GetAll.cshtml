@@ -27,11 +27,23 @@
                 <td>@phone.ParentItemId</td>
                 <td>@phone.Name</td>
                 <td>@phone.Balance</td>
-                <td><a href="~/Home/Buy/@phone.Id">Купить</a></td>
-                <td><a href="~/Home/Buy/@phone.Id">Сделать заказ</a></td>
                 <td><a href="~/Goods/GetTree/@phone.Id">Разложить</a></td>
             </tr>
         }
+        <form method="post" action="Create">
+            <div>
+                <label for="name">Название:</label>
+                <input type="text" name="name" value="" />
+                <label for="quantity">Количество в единице товара:</label>
+                <input type="number" name="quantity" value="" />
+                <label for="parentItemId">Название:</label>
+                <input type="text" name="parentItemId" value="" />
+                <label for="price">Цена:</label>
+                <input type="text" name="price" value="" />
+                <input type="Submit" value="Добавить" /><br />
+                <br />
+            </div>
+        </form>
     </table>
 </body>
 </html>

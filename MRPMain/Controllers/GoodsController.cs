@@ -50,13 +50,24 @@ namespace MRP_Admin_Api.Controllers
         [HttpDelete]
         public async Task Delete(Guid id) => await _goodsHelper.GetParentsTree(id, true);
 
-        [HttpPost]
-        public async Task<IActionResult> Create(GoodsDto newGoods)
+        public async Task<IActionResult> Create(string name, int quantity, Guid? parentItemId, string price,
+            Guid supplierId)
         {
             try
             {
-                await _repository.Create(newGoods);
-                return Ok("Товар создан");
+                var newGood = new GoodsDto
+                {
+                    Id = Guid.NewGuid(),
+                    Description = "Новый товар",
+                    Balance = quantity,
+                    IsMainItem = true,
+                    Name = name,
+                    ParentItemId = parentItemId,
+                    Price = Double.Parse(price),
+                    SupplierId = supplierId
+                };
+                await _repository.Create(newGood);
+                return Redirect("https://localhost:7201/Goods/GetAll");
             }
             catch (Exception ex)
             {
