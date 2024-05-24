@@ -17,6 +17,29 @@ namespace MRP_DAL.Repository
 #nullable enable
         public async Task Create(InvoiceDto item)
         {
+            var sklad = await _db.StoreHouse.FirstOrDefaultAsync(x => x.GoodId == item.GoodId);
+            if(sklad == null)
+            {
+                var skladNew = new StoreHouse
+                {
+                    Id = Guid.NewGuid(),
+                    Count = item.Quantity,
+                    GoodId = item.GoodId
+                };
+                var newInvoice1 = new InvoiceDAL
+                {
+                    Id = Guid.NewGuid(),
+                    GoodId = item.GoodId,
+                    Quantity = item.Quantity,
+                    AccountingTime = item.AccountingTime,
+                    IsAccounting = false
+                };
+                await _db.Invoice.AddAsync(newInvoice1);
+                await _db.StoreHouse.AddAsync(skladNew);
+                await Save();
+                return;
+            }
+            sklad.Count = sklad.Count + item.Quantity;
             var newInvoice = new InvoiceDAL
             {
                 Id = Guid.NewGuid(),
@@ -26,6 +49,7 @@ namespace MRP_DAL.Repository
                 IsAccounting = false
             };
             await _db.Invoice.AddAsync(newInvoice);
+            _db.StoreHouse.Update(sklad);
             await Save();
         }
 

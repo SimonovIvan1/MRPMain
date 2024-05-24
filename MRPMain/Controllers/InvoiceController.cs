@@ -58,13 +58,20 @@ namespace MRP_Admin_Api.Controllers
         [HttpDelete]
         public async Task Delete(Guid id) => await _repository.Delete(id);
 
-        [HttpPost]
-        public async Task<IActionResult> Create(InvoiceDto newClient)
+        public async Task<IActionResult> Create(Guid goodId, int quantity)
         {
             try
             {
+                var newClient = new InvoiceDto()
+                {
+                    Id = Guid.NewGuid(),
+                    AccountingTime = DateTime.UtcNow,
+                    GoodId = goodId,
+                    IsAccounting = true,
+                    Quantity = quantity
+                };
                 await _repository.Create(newClient);
-                return Ok("Клиент создан");
+                return Redirect("https://localhost:7201/Invoice/GetAll");
             }
             catch (Exception ex)
             {

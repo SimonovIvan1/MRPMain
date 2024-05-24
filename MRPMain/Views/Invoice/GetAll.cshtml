@@ -14,7 +14,7 @@
     <h3>Заказы</h3>
     <table>
         <tr>
-            <td>Идентификатор заказа</td>
+            <td>Идентификатор Товара</td>
             <td>Количество поступления</td>
             <td>Добавления</td>
             <td></td>
@@ -28,6 +28,20 @@
                 <td><a href="~/Invoice/GetTree/?goodId=@phone.GoodId">Разложить по товару на складе</a></td>
             </tr>
         }
+
+        <h2>Добавление/удаление товаров на складе</h2>
+        <h3>Информация о товаре</h3>
+        <form method="post" action="Create">
+            <div>
+                <label for="goodId">Идентификатор товара:</label>
+                <input type="text" name="goodId" value="" />
+                <label for="quantity">Количество товара:</label>
+                <input type="number" name="quantity" value="" />
+                <input type="Submit" value="Добавить" /><br />
+                <br />
+            </div>
+        </form>
+
         <td><a href="~/Invoice/GetAllSklad/">Перейти на склад</a></td>
     </table>
 </body>
