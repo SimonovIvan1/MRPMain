@@ -1,6 +1,7 @@
 ﻿using ExternalModels;
 using ExternalModels.Dto;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using MRP_DAL.Entity;
 
 namespace MRP_DAL.Repository
@@ -87,6 +88,21 @@ namespace MRP_DAL.Repository
             _db.Update(client);
             await Save();
             return;
+        }
+        public async Task<List<SkladDto>> GetAllSklad()
+        {
+            var sklads = await _db.StoreHouse.ToListAsync();
+            var result = new List<SkladDto>();
+            foreach(var sklad in sklads)
+            {
+                var item = new SkladDto
+                {
+                    GoodId = sklad.GoodId,
+                    Count = sklad.Count
+                };
+                result.Add(item);
+            }
+            return result;
         }
     }
 }

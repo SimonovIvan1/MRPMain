@@ -1,9 +1,8 @@
 ﻿@using ExternalModels.Dto
-@model InvoiceDto[]
+@model List<SkladDto>
 @{
-    ViewData["Title"] = "Поставки";
+    ViewData["Title"] = "Privacy Policy";
 }
-
 <!DOCTYPE html>
 
 <html>
@@ -14,23 +13,18 @@
     <h3>Заказы</h3>
     <table>
         <tr>
-            <td>Идентификатор заказа</td>
-            <td>Количество поступления</td>
-            <td>Добавления</td>
+            <td>Идентификатор товара</td>
+            <td>Количество на складе</td>
             <td></td>
         </tr>
         @foreach (var phone in Model)
         {
             <tr>
                 <td>@phone.GoodId</td>
-                <td>@phone.Quantity</td>
-                <td>@phone.AccountingTime</td>
+                <td>@phone.Count</td>
                 <td><a href="~/Invoice/GetTree/?goodId=@phone.GoodId">Разложить по товару на складе</a></td>
             </tr>
         }
-        <td><a href="~/Invoice/GetAllSklad/">Перейти на склад</a></td>
     </table>
 </body>
 </html>
-
-

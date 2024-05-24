@@ -74,5 +74,7 @@ namespace MRP_Admin_Api.Controllers
 
         [HttpPut("make-an-account")]
         public async Task MakeAnAccount() => await _helper.MakeAnAccount();
+
+        public async Task<IActionResult> GetAllSklad() => View(await _repository.GetAllSklad());      
     }
 }
